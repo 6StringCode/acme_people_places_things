@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const { STRING } = Sequelize;
+const { STRING, INTEGER } = Sequelize;
 const conn = new Sequelize(process.env.DATABASE_URL || 'postgres://localhost/acme_people_places_things');
 
 const Person = conn.define('person', {
@@ -35,7 +35,20 @@ const Thing = conn.define('thing', {
     }
 });
 
-const Souvenir = conn.define('souvenir');
+const Souvenir = conn.define('souvenir', {
+    personId: {
+        type: INTEGER,
+        allowNull: false
+    },
+    placeId: {
+        type: INTEGER,
+        allowNull: false
+    },
+    thingId: {
+        type: INTEGER,
+        allowNull: false
+    }
+});
 Souvenir.belongsTo(Person);
 Souvenir.belongsTo(Place);
 Souvenir.belongsTo(Thing);
@@ -77,7 +90,7 @@ const syncAndSeed = async() => {
             placeId: nyc.id,
             thingId: shirt.id,
         }),
-    ])
+    ]);
 };
 
 
