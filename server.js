@@ -4,6 +4,18 @@ const { syncAndSeed, Person, Place, Thing, Souvenir } = require('./db');
 
 app.use('/assets', express.static('assets'));
 app.use(express.urlencoded({ extended: false }));
+app.use(require('method-override')('_method'));
+
+app.delete('/:id', async(req, res, next)=>{
+    try{
+        const souvenir = await Souvenir.findByPk(req.params.id);
+        await souvenir.destroy();
+        res.redirect('/');
+    }
+    catch(ex){
+        next(ex);
+    }
+});
 
 app.post('/souvenirs', async(req, res, next)=> {
     try{
@@ -11,9 +23,10 @@ app.post('/souvenirs', async(req, res, next)=> {
         res.redirect('/');
     }
     catch(ex){
-        nect(ex);
+        next(ex);
     }
 });
+
 app.get('/', async(req, res, next)=> {
     try {
         const [ people, places, things, souvenirs] = 
@@ -68,7 +81,8 @@ app.get('/', async(req, res, next)=> {
                         <p>Create a new Souvenir Purchase by selecting a Person, 
                         the Place they purchased the souvenir, and the Thing they bought.</p>
                         <form method='POST' action='/souvenirs'>
-                            Person <select name='personId'>
+                            <label>Person</label> 
+                            <select name='personId'>
                             ${
                                 people.map( person => {
                                 return `
@@ -79,7 +93,8 @@ app.get('/', async(req, res, next)=> {
                                 }).join('')
                             }
                             </select>
-                            Place <select name='placeId'>
+                            <label>Person</label> 
+                            <select name='placeId'>
                             ${
                                 places.map( place => {
                                 return `
@@ -90,7 +105,8 @@ app.get('/', async(req, res, next)=> {
                                 }).join('')
                             }
                             </select>
-                            Thing <select name='thingId'>
+                            <label>Person</label> 
+                            <select name='thingId'>
                             ${
                                 things.map( thing => {
                                 return `
@@ -106,12 +122,16 @@ app.get('/', async(req, res, next)=> {
                         <ul>
                             ${ souvenirs.map( souvenir => {
                                 return `<li>${ souvenir.person.name } purchased a
-                                ${ souvenir.thing.name } in ${ souvenir.place.name } </li>`
-                            }).join('')
-                        }
+                                ${ souvenir.thing.name } in ${ souvenir.place.name } 
+                                <form method='POST' action='/${souvenir.id}?_method=DELETE'>
+                                <button>
+                                Delete 
+                                </button>
+                                </form>
+                                </li>`
+                            }).join('')}
                         </ul>
                     </div>
-                    
                     </main>
                 </body>
             </html>`

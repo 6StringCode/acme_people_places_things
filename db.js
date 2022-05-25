@@ -36,6 +36,7 @@ const Thing = conn.define('thing', {
 });
 
 const Souvenir = conn.define('souvenir', {
+    //the below isn't nec because of the belongs to
     // personId: {
     //     type: INTEGER,
     //     allowNull: false
