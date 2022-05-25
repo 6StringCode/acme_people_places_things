@@ -3,7 +3,17 @@ const app = express(); //2
 const { syncAndSeed, Person, Place, Thing, Souvenir } = require('./db');
 
 app.use('/assets', express.static('assets'));
+app.use(express.urlencoded({ extended: false }));
 
+app.post('/souvenirs', async(req, res, next)=> {
+    try{
+        await Souvenir.create(req.body);
+        res.redirect('/');
+    }
+    catch(ex){
+        nect(ex);
+    }
+});
 app.get('/', async(req, res, next)=> {
     try {
         const [ people, places, things, souvenirs] = 
@@ -25,6 +35,7 @@ app.get('/', async(req, res, next)=> {
                 </header>
                 <body>
                     <h1>Acme People, Places and Things</h1>
+                    <main>
                     <div>
                         <h2>People</h2>
                         <ul>
@@ -54,6 +65,44 @@ app.get('/', async(req, res, next)=> {
                     </div>
                     <div>
                         <h2>Souvenir Purchases</h2>
+                        <p>Create a new Souvenir Purchase by selecting a Person, 
+                        the Place they purchased the souvenir, and the Thing they bought.</p>
+                        <form method='POST' action='/souvenirs'>
+                            Person <select name='personId'>
+                            ${
+                                people.map( person => {
+                                return `
+                                    <option value=${person.id}>
+                                    ${ person.name }
+                                    </option>
+                                `;
+                                }).join('')
+                            }
+                            </select>
+                            Place <select name='placeId'>
+                            ${
+                                places.map( place => {
+                                return `
+                                    <option value=${place.id}>
+                                    ${ place.name }
+                                    </option>
+                                `;
+                                }).join('')
+                            }
+                            </select>
+                            Thing <select name='thingId'>
+                            ${
+                                things.map( thing => {
+                                return `
+                                    <option value=${thing.id}>
+                                    ${ thing.name }
+                                    </option>
+                                `;
+                                }).join('')
+                            }
+                            </select>
+                            <button>Create</button>
+                        </form>
                         <ul>
                             ${ souvenirs.map( souvenir => {
                                 return `<li>${ souvenir.person.name } purchased a
@@ -62,6 +111,8 @@ app.get('/', async(req, res, next)=> {
                         }
                         </ul>
                     </div>
+                    
+                    </main>
                 </body>
             </html>`
         )
