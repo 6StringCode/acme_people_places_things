@@ -36,23 +36,22 @@ const Thing = conn.define('thing', {
 });
 
 const Souvenir = conn.define('souvenir', {
-    personId: {
-        type: INTEGER,
-        allowNull: false
-    },
-    placeId: {
-        type: INTEGER,
-        allowNull: false
-    },
-    thingId: {
-        type: INTEGER,
-        allowNull: false
-    }
+    // personId: {
+    //     type: INTEGER,
+    //     allowNull: false
+    // },
+    // placeId: {
+    //     type: INTEGER,
+    //     allowNull: false
+    // },
+    // thingId: {
+    //     type: INTEGER,
+    //     allowNull: false
+    // }
 });
 Souvenir.belongsTo(Person);
 Souvenir.belongsTo(Place);
 Souvenir.belongsTo(Thing);
-
 
 const syncAndSeed = async() => {
     await conn.sync ({ force: true });
@@ -81,17 +80,23 @@ const syncAndSeed = async() => {
             thingId: hat.id,
         }),
         Souvenir.create({ 
-            personId: moe.id, 
-            placeId: paris.id,
-            thingId: bag.id,
-        }),
-        Souvenir.create({ 
             personId: ethyl.id, 
             placeId: nyc.id,
             thingId: shirt.id,
+        }),
+        Souvenir.create({ 
+            personId: moe.id, 
+            placeId: paris.id,
+            thingId: bag.id,
         }),
     ]);
 };
 
 
-module.exports = { syncAndSeed };
+module.exports = { 
+    syncAndSeed,
+    Person,
+    Place, 
+    Thing,
+    Souvenir
+ };
